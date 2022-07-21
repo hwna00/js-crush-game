@@ -7,8 +7,6 @@ canvas.width = 500;
 const player = {
     x: 225,
     y: 400,
-    centerX: this.x + 25,
-    centerY: this.y + 25,
     width: 50,
     height: 50,
     draw() {
@@ -60,8 +58,10 @@ function moveMonster() {
         monsters.push(monster);
     }
 
-    monsters.forEach((monster) => {
-		checkCollision(player, monster);
+    monsters.forEach((monster, i, o) => {
+		if (checkCollision(player, monster)){
+			o.splice(i, 1);
+		}
         monster.y++;
         monster.draw();
     });
@@ -78,9 +78,9 @@ moveMonster();
 
 const checkCollision = (player, obstacle) => {
     if (
-        (player.x - obstacle.x) ** 2 + (player.y - obstacle.y) ** 2 <=
+        (player.x+25 - obstacle.x) ** 2 + (player.y+25 - obstacle.y) ** 2 <=
         (player.width / 2 + obstacle.radius) ** 2
     ) {
-        console.log('collision');
+		return true;
     }
 };
