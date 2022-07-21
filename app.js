@@ -59,10 +59,15 @@ function moveMonster() {
     }
 
     monsters.forEach((monster, i, o) => {
-		if (checkCollision(player, monster)){
-			o.splice(i, 1);
-		}
-        monster.y++;
+        if (checkCollision(player, monster)) {
+            o.splice(i, 1);
+        }
+        const width = player.x + 25 - monster.x;
+        const height = player.y + 25 - monster.y;
+        const diagonal = Math.sqrt(width ** 2 + height ** 2);
+		
+		monster.x += width/diagonal;
+        monster.y += height/diagonal;
         monster.draw();
     });
 
@@ -78,9 +83,9 @@ moveMonster();
 
 const checkCollision = (player, obstacle) => {
     if (
-        (player.x+25 - obstacle.x) ** 2 + (player.y+25 - obstacle.y) ** 2 <=
+        (player.x + 25 - obstacle.x) ** 2 + (player.y + 25 - obstacle.y) ** 2 <=
         (player.width / 2 + obstacle.radius) ** 2
     ) {
-		return true;
+        return true;
     }
 };
