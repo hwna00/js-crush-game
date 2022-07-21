@@ -7,6 +7,7 @@ canvas.width = 500;
 const player = {
     x: 225,
     y: 400,
+	hp: 100,
     width: 50,
     height: 50,
     draw() {
@@ -29,11 +30,20 @@ function keysReleased(e) {
     direction = '';
 }
 
+const checkGameOver = () => {
+	while (player.hp <= 0) {
+		alert('game over');
+		document.location.reload();
+		clearInterval(interval);
+	}
+}
+
 class Obstacle {
     constructor() {
         this.x = Math.random() * (490 - 10) + 10;
         this.y = 5;
         this.radius = 20;
+		this.atk = 50;
     }
 
     draw() {
@@ -48,6 +58,7 @@ var timer = 0;
 var monsters = [];
 
 function moveMonster() {
+	checkGameOver();
     requestAnimationFrame(moveMonster);
     timer++;
 
@@ -61,6 +72,8 @@ function moveMonster() {
     monsters.forEach((monster, i, o) => {
         if (checkCollision(player, monster)) {
             o.splice(i, 1);
+			player.hp -= monster.atk;
+			console.log(player.hp);
         }
         const width = player.x + 25 - monster.x;
         const height = player.y + 25 - monster.y;
@@ -89,3 +102,4 @@ const checkCollision = (player, obstacle) => {
         return true;
     }
 };
+
