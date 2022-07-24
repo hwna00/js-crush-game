@@ -7,7 +7,7 @@ canvas.width = 500;
 const player = {
     x: 225,
     y: 400,
-	hp: 100,
+    hp: 100,
     width: 50,
     height: 50,
     draw() {
@@ -31,57 +31,51 @@ function keysReleased(e) {
 }
 
 const checkGameOver = () => {
-	while (player.hp <= 0) {
-		alert('game over');
-		document.location.reload();
-		clearInterval(interval);
-	}
-}
-
-class Obstacle {
-    constructor() {
-        this.x = Math.random() * (490 - 10) + 10;
-        this.y = 5;
-        this.radius = 20;
-		this.atk = 50;
+    while (player.hp <= 0) {
+        alert('game over');
+        document.location.reload();
+        clearInterval(interval);
     }
-
-    draw() {
-        ctx.beginPath();
-        ctx.fillStyle = 'red';
-        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        ctx.fill();
-    }
-}
+};
 
 var timer = 0;
 var monsters = [];
 
 function moveMonster() {
-	checkGameOver();
+    checkGameOver();
     requestAnimationFrame(moveMonster);
     timer++;
 
     ctx.clearRect(0, 0, canvas.height, canvas.width);
 
     if (timer % 240 === 0) {
-        const monster = new Obstacle();
+        const monster = new MonsterSprite({
+            position: {
+                x: Math.random() * (490 - 10) + 10,
+                y: 5,
+            },
+            size: {
+                width: 40,
+                height: 40,
+            },
+            imgSrc: './img/monster/idle/frame-1.png',
+        });
         monsters.push(monster);
     }
 
     monsters.forEach((monster, i, o) => {
         if (checkCollision(player, monster)) {
             o.splice(i, 1);
-			player.hp -= monster.atk;
-			console.log(player.hp);
+            player.hp -= monster.atk;
+            console.log(player.hp);
         }
-        const width = player.x + 25 - monster.x;
-        const height = player.y + 25 - monster.y;
+        const width = player.x + 25 - monster.position.x;
+        const height = player.y + 25 - monster.position.y;
         const diagonal = Math.sqrt(width ** 2 + height ** 2);
-		
-		monster.x += width/diagonal;
-        monster.y += height/diagonal;
-        monster.draw();
+
+        monster.position.x += width / diagonal;
+        monster.position.y += height / diagonal;
+        monster.update();
     });
 
     if (keys[87] && player.y > 0) player.y -= 5;
@@ -96,10 +90,9 @@ moveMonster();
 
 const checkCollision = (player, obstacle) => {
     if (
-        (player.x + 25 - obstacle.x) ** 2 + (player.y + 25 - obstacle.y) ** 2 <=
-        (player.width / 2 + obstacle.radius) ** 2
+        Math.abs(player.x - obstacle.position.x) <= 40 &&
+        Math.abs(player.y - obstacle.position.y) <= 40
     ) {
         return true;
     }
 };
-
